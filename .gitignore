@@ -1,0 +1,21 @@
+/target/
+.gradle
+/build/
+*.log
+*.log.*
+!gradle/wrapper/gradle-wrapper.jar
+
+### STS ###
+.apt_generated
+.factorypath
+.settings
+.class
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+/classes/
+/test-classes/
