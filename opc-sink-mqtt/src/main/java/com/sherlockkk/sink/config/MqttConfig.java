@@ -40,8 +40,8 @@ public class MqttConfig {
 		options.setConnectionTimeout(mqttProperties.getConnectionTimeout());
 		//开启自动重连
 		options.setAutomaticReconnect(true);
-		//自动重连延迟时间
-		options.setMaxReconnectDelay(5);
+		//自动重连间隔时间,单位毫秒
+		options.setMaxReconnectDelay(5000);
 		options.setKeepAliveInterval(mqttProperties.getKeepAliveInterval());
 		//设置“遗嘱”消息的话题，若客户端和服务器之间的连接意外中断，服务器将发布客户端的“遗嘱”消息
 		options.setWill(WILL_TOPIC, WILL_DATA, 2, false);
@@ -107,12 +107,4 @@ public class MqttConfig {
 		return adapter;
 	}
 
-	// public MessageHandler mqttInbound() {
-	// 	return new MessageHandler() {
-	// 		@Override
-	// 		public void handleMessage(Message<?> message) throws MessagingException {
-	//
-	// 		}
-	// 	};
-	// }
 }

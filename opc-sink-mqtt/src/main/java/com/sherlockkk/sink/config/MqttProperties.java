@@ -32,11 +32,11 @@ public class MqttProperties {
 	 */
 	private String defaultTopic;
 	/**
-	 * 连接超时时长,单位为秒
+	 * 连接超时时长,单位为秒，默认为30
 	 */
 	private int connectionTimeout;
 	/**
-	 * 会话心跳时间
+	 * 会话心跳时间，单位为秒，默认为60
 	 */
 	private int keepAliveInterval;
 }

@@ -8,4 +8,4 @@ spring:
     password: public
     connection-timeout: 30
     default-topic: defaultTopic
-    keep-alive-interval: 10
+    keep-alive-interval: 60
