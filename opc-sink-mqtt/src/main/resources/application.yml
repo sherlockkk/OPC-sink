@@ -1,0 +1,11 @@
+server:
+  port: 33333
+spring:
+  mqtt:
+    client-id: opc-mqtt
+    endpoint-url: tcp://172.16.72.238:1883
+    username: admin
+    password: public
+    connection-timeout: 30
+    default-topic: defaultTopic
+    keep-alive-interval: 10
