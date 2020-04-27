@@ -36,7 +36,7 @@ public class InfluxDBServiceImpl implements InfluxDBService {
 
 	@Override
 	public void query() {
-		Query query = new Query("SELECT * FROM \"test-measure\" WHERE time > now() - 5m", "test");
+		Query query = new Query("SELECT * FROM \"test-measure\" WHERE time > now() - 5m");
 		QueryResult queryResult = influxDBTemplate.query(query);
 		log.info("查询结果：{}", queryResult);
 		List<QueryResult.Result> results = queryResult.getResults();

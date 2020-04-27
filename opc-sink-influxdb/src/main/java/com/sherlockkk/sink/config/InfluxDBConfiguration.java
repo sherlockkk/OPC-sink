@@ -16,7 +16,9 @@ public class InfluxDBConfiguration {
 
 	@Bean
 	public InfluxDBConnectionFactory connectionFactory(InfluxDBProperties properties) {
-		return new InfluxDBConnectionFactory(properties);
+		InfluxDBConnectionFactory factory = new InfluxDBConnectionFactory(properties);
+		factory.getConnection().setDatabase(properties.getDatabase());
+		return factory;
 	}
 
 	@Bean
