@@ -11,5 +11,13 @@
 
     <artifactId>opc-sink-kafka</artifactId>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        
+    </dependencies>
 
 </project>
