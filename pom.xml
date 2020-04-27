@@ -19,6 +19,7 @@
     <modules>
         <module>opc-sink-mqtt</module>
         <module>opc-sink-kafka</module>
+        <module>opc-sink-influxdb</module>
     </modules>
 
     <properties>

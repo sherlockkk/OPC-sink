@@ -1,0 +1,21 @@
+server:
+  port: 33335
+#spring:
+#  influx:
+#    url: http://172.16.72.238:8086
+#    user: admin
+#    password: admin
+
+spring:
+  influxdb:
+    url: http://172.16.72.238:8086
+    username: admin
+    password: admin
+    database: test
+    retention-policy: autogen
+    # 可选配置
+    connect-timeout: 10
+    read-timeout: 30
+    write-timeout: 10
+    # 开启压缩
+    gzip: true
