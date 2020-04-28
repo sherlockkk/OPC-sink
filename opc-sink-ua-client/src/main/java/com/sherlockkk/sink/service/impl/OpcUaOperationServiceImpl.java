@@ -15,14 +15,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.MonitoringMode;
-import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
-import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateRequest;
-import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
-import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
+import org.eclipse.milo.opcua.stack.core.types.enumerated.*;
+import org.eclipse.milo.opcua.stack.core.types.structured.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,12 +32,45 @@ public class OpcUaOperationServiceImpl implements OpcUaOperationService {
 	private UaClient uaClient;
 
 	@Override
-	public void browseNodes() throws ExecutionException, InterruptedException {
+	public void browseNodes() {
 		long startTime = System.currentTimeMillis();
 		AtomicInteger count = new AtomicInteger(0);
 		browseNode(Identifiers.RootFolder, count);
+		// browseNode2(Identifiers.RootFolder, count);
 		long endTime = System.currentTimeMillis();
 		log.info("检索共耗时：{}ms,总计{}个节点", endTime - startTime, count.get());
+	}
+
+	private void browseNode2(NodeId nodeId, AtomicInteger count) {
+		BrowseDescription browseDescription = new BrowseDescription(
+				nodeId,
+				BrowseDirection.Forward,
+				Identifiers.References,
+				true,
+				Unsigned.uint(NodeClass.Object.getValue() | NodeClass.Variable.getValue()),
+				Unsigned.uint(BrowseResultMask.All.getValue()));
+
+		try {
+			// new NodeId(0,35)
+			// uaClient.getAddressSpace().browse()
+
+			BrowseResult browseResult = uaClient.browse(browseDescription).get();
+			List<ReferenceDescription> references = Arrays.asList(browseResult.getReferences());
+			for (ReferenceDescription reference : references) {
+				QualifiedName qualifiedName = reference.getBrowseName();
+				NodeId curNodeId = reference.getReferenceTypeId();
+				log.info("Node BrowseName:{}===NodeId:ns={};s={}===Node Type:{}",
+						qualifiedName.getName(),
+						curNodeId.getNamespaceIndex(),
+						curNodeId.getIdentifier(),
+						curNodeId.getType());
+				count.incrementAndGet();
+				browseNode2(curNodeId, count);
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	private void browseNode(NodeId nodeId, AtomicInteger count) {
@@ -49,16 +80,19 @@ public class OpcUaOperationServiceImpl implements OpcUaOperationService {
 			for (Node node : nodes) {
 				NodeId curNodeId = node.getNodeId().get();
 				QualifiedName qualifiedName = node.getBrowseName().get();
-				log.info("Node BrowseName:{}===NodeId:ns={};s={}===Node Type:{}",
-						qualifiedName.getName(),
-						curNodeId.getNamespaceIndex(),
-						curNodeId.getIdentifier(),
-						curNodeId.getType());
-				count.incrementAndGet();
+				int nodeClass = node.getNodeClass().get().getValue();
+				if (nodeClass == NodeClass.Variable.getValue() && !Unsigned.ushort(0).equals(curNodeId.getNamespaceIndex())) {
+					log.info("Node BrowseName:{}===NodeId:ns={};s={}===Node Type:{}",
+							qualifiedName.getName(),
+							curNodeId.getNamespaceIndex(),
+							curNodeId.getIdentifier(),
+							curNodeId.getType());
+					count.incrementAndGet();
+				}
 				browseNode(curNodeId, count);
 			}
 		} catch (InterruptedException | ExecutionException e) {
-			//TODO 权限不足导致的检索不了也会报错，暂时先屏蔽掉
+			//TODO 权限不足导致的检索不了也会报错，报错信息太多，暂时先屏蔽掉
 			// e.printStackTrace();
 		}
 

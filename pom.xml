@@ -21,6 +21,7 @@
         <module>opc-sink-kafka</module>
         <module>opc-sink-influxdb</module>
         <module>opc-sink-ua-client</module>
+        <module>opc-sink-demo</module>
     </modules>
 
     <properties>

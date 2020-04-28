@@ -3,7 +3,7 @@ package com.sherlockkk.sink.service;
 import java.util.concurrent.ExecutionException;
 
 public interface OpcUaOperationService {
-	void browseNodes() throws ExecutionException, InterruptedException;
+	void browseNodes();
 
 	void readValue();
 
