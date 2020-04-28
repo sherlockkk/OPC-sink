@@ -20,6 +20,7 @@
         <module>opc-sink-mqtt</module>
         <module>opc-sink-kafka</module>
         <module>opc-sink-influxdb</module>
+        <module>opc-sink-ua-client</module>
     </modules>
 
     <properties>
