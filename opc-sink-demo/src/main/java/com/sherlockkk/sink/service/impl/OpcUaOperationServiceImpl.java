@@ -1,6 +1,9 @@
 package com.sherlockkk.sink.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.sherlockkk.sink.entity.DataPoint;
+import com.sherlockkk.sink.service.IMqttPublishGateway;
 import com.sherlockkk.sink.service.OpcUaOperationService;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
@@ -30,6 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class OpcUaOperationServiceImpl implements OpcUaOperationService {
 	@Autowired
 	private UaClient uaClient;
+	@Autowired
+	private IMqttPublishGateway mqttPublishGateway;
 
 	@Override
 	public void browseNodes() {
@@ -155,9 +160,22 @@ public class OpcUaOperationServiceImpl implements OpcUaOperationService {
 	}
 
 	private void onSubscriptionValue(SerializationContext serializationContext, UaMonitoredItem uaMonitoredItem, DataValue dataValue) {
+		NodeId nodeId = uaMonitoredItem.getReadValueId().getNodeId();
 		log.info(
 				"接收到订阅数据: item={}, value={}",
-				uaMonitoredItem.getReadValueId().getNodeId(), dataValue.getValue());
+				nodeId, dataValue.getValue());
+
+		//发布到 MQTT
+		DataPoint dataPoint = new DataPoint();
+		dataPoint.setBrowseName("");
+		dataPoint.setNamespaceIndex(nodeId.getNamespaceIndex().intValue());
+		dataPoint.setIdentifier(nodeId.getIdentifier());
+		dataPoint.setDataType("");
+		dataPoint.setValue(dataValue.getValue().getValue());
+		dataPoint.setSourceTime(dataValue.getSourceTime().getJavaTime());
+		dataPoint.setServerTime(dataValue.getServerTime().getJavaTime());
+
+		mqttPublishGateway.sendToMqtt("sink-demo", JSON.toJSONString(dataPoint));
 	}
 
 }

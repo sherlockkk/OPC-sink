@@ -1,0 +1,52 @@
+server:
+  port: 33336
+
+spring:
+  mqtt:
+    endpoint-url: tcp://172.16.72.238:1883
+    username: admin
+    password: public
+    connection-timeout: 30
+    keep-alive-interval: 60
+    outbound:
+      client-id: opc-mqtt-outbound
+      default-topic: defaultTopic
+      async: true
+      default-qos: 0
+    inbound:
+      client-id: opc-mqtt-inbound
+      topic:
+        - sink-demo
+      qos: 0
+
+
+  kafka:
+    # 指定 Kafka 地址
+    bootstrap-servers: 172.16.72.238:9092
+    consumer:
+      # 指定 Group ID
+      group-id: test-group
+      auto-offset-reset: earliest
+      # 指定消息 key 和消息体的反序列化方式
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    listener:
+      # true：消费者在监听不存在的主题时报错
+      missing-topics-fatal: false
+
+
+  influxdb:
+    url: http://172.16.72.238:8086
+    username: admin
+    password: admin
+    database: test
+    retention-policy: autogen
+    # 可选配置
+    connect-timeout: 10
+    read-timeout: 30
+    write-timeout: 10
+    # 开启压缩
+    gzip: true
